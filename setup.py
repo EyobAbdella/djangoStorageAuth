@@ -1,18 +1,25 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
-    name="dj-storage-auth",  
-    version="0.1.0",  
+    name="djangoStorageAuth",
+    version="0.1.0",
     author="Eyob",
     author_email="eyobabdellasharo@gmail.com",
     description="Django integration for Google Drive and Microsoft 365 with OAuth and file operations.",
-    long_description=open("README.md").read(),  
-    long_description_content_type="text/markdown",  
-    url="https://github.com/EyobAbdella/dj-storage-auth",  
-    packages=find_packages(where='.'),  
-    include_package_data=True,  
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/EyobAbdella/djangoStorageAuth",
+    packages=find_packages(where="."),
+    include_package_data=True,
     install_requires=[
-        "Django>=3.2",  
+        "django>=5.2",
+        "django-encrypted-model-fields>=0.6.5",
+        "djangorestframework>=3.16.0",
+        "djangorestframework-simplejwt>=5.4.0",
+        "oauthlib>=3.2.2",
+        "pyjwt>=2.10.1",
+        "python-dotenv>=1.1.0",
+        "requests>=2.32.3",
     ],
     classifiers=[
         "Framework :: Django",
@@ -25,5 +32,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.7", 
+    python_requires=">=3.7",
 )

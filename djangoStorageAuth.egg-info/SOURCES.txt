@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+setup.py
+djangoStorageAuth/__init__.py
+djangoStorageAuth/admin.py
+djangoStorageAuth/apps.py
+djangoStorageAuth/models.py
+djangoStorageAuth/serializers.py
+djangoStorageAuth/tests.py
+djangoStorageAuth/urls.py
+djangoStorageAuth/views.py
+djangoStorageAuth.egg-info/PKG-INFO
+djangoStorageAuth.egg-info/SOURCES.txt
+djangoStorageAuth.egg-info/dependency_links.txt
+djangoStorageAuth.egg-info/requires.txt
+djangoStorageAuth.egg-info/top_level.txt
+djangoStorageAuth/migrations/__init__.py
