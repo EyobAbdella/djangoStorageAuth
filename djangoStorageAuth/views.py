@@ -1,7 +1,6 @@
 
 from random import SystemRandom
 from urllib.parse import urlencode
-
 import jwt
 import requests
 from django.conf import settings
@@ -13,7 +12,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .models import OAuthTokens
 from .serializers import UserSerializer
 
 User = get_user_model()
@@ -101,10 +100,9 @@ class GoogleCallbackViewSet(viewsets.ModelViewSet):
         user, _ = User.objects.get_or_create(email=email)
         login(request, user)
 
-        if hasattr(user, 'google_access_token'):
-            user.google_access = access_token
-        if hasattr(user, 'google_refresh_token'):
-            user.google_refresh = refresh_token
+        oauth_tokens, _ = OAuthTokens.objects.get_or_create(user=user)
+        oauth_tokens.google_access = access_token
+        oauth_tokens.google_refresh = refresh_token 
 
         user.save()
 
