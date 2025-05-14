@@ -15,6 +15,10 @@ Requires-Dist: oauthlib>=3.2.2
 Requires-Dist: pyjwt>=2.10.1
 Requires-Dist: python-dotenv>=1.1.0
 Requires-Dist: requests>=2.32.3
+Requires-Dist: google-auth
+Requires-Dist: google-auth-oauthlib
+Requires-Dist: google-auth-httplib2
+Requires-Dist: google-api-python-client
 Dynamic: author
 Dynamic: author-email
 Dynamic: home-page

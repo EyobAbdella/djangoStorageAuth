@@ -1,20 +1,20 @@
-
 from datetime import datetime, timedelta
 from random import SystemRandom
 from urllib.parse import urlencode
-import jwt
-import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.core.cache import cache
 from django.shortcuts import redirect
-from oauthlib.common import UNICODE_ASCII_CHARACTER_SET
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from oauthlib.common import UNICODE_ASCII_CHARACTER_SET
 from .models import OAuthTokens
 from .serializers import UserSerializer
+import requests
+import jwt
+
 
 User = get_user_model()
 
@@ -98,15 +98,13 @@ class GoogleCallbackViewSet(viewsets.ModelViewSet):
         refresh_token = tokens.get("refresh_token")
 
 
-        user, _ = User.objects.get_or_create(email=email)
+        user, _ = User.objects.get_or_create(email=email, username=email)
         login(request, user)
 
         oauth_tokens, _ = OAuthTokens.objects.get_or_create(user=user)
         oauth_tokens.google_access = access_token
         oauth_tokens.google_refresh = refresh_token 
-
-        user.save()
-
+        oauth_tokens.save()
         refresh = RefreshToken.for_user(user)
         token = TokenObtainPairSerializer().get_token(user)
 
@@ -213,8 +211,8 @@ class MicrosoftCallbackViewSet(viewsets.ModelViewSet):
         oauth_tokens.microsoft_access = access_token
         oauth_tokens.microsoft_refresh = refresh_token 
         oauth_tokens.microsoft_expiry = expiration_time 
+        oauth_tokens.save()
 
-        user.save()
 
         refresh = RefreshToken.for_user(user)
         token = TokenObtainPairSerializer().get_token(user)
@@ -223,4 +221,5 @@ class MicrosoftCallbackViewSet(viewsets.ModelViewSet):
             "access_token": str(token.access_token),
             "refresh_token": str(refresh),
         }, status=status.HTTP_200_OK)
+
 

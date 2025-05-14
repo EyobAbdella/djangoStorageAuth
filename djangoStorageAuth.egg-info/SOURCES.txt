@@ -8,11 +8,11 @@ djangoStorageAuth/models.py
 djangoStorageAuth/serializers.py
 djangoStorageAuth/tests.py
 djangoStorageAuth/urls.py
+djangoStorageAuth/utils.py
 djangoStorageAuth/views.py
 djangoStorageAuth.egg-info/PKG-INFO
 djangoStorageAuth.egg-info/SOURCES.txt
 djangoStorageAuth.egg-info/dependency_links.txt
 djangoStorageAuth.egg-info/requires.txt
 djangoStorageAuth.egg-info/top_level.txt
-djangoStorageAuth/migrations/0001_initial.py
 djangoStorageAuth/migrations/__init__.py

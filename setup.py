@@ -20,6 +20,11 @@ setup(
         "pyjwt>=2.10.1",
         "python-dotenv>=1.1.0",
         "requests>=2.32.3",
+        "google-auth",
+        "google-auth-oauthlib",
+        "google-auth-httplib2",
+        "google-api-python-client",
+
     ],
     classifiers=[
         "Framework :: Django",
