@@ -1,10 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import  timedelta
 from random import SystemRandom
 from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.core.cache import cache
 from django.shortcuts import redirect
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -14,6 +15,7 @@ from .models import OAuthTokens
 from .serializers import UserSerializer
 import requests
 import jwt
+
 
 
 User = get_user_model()
@@ -114,10 +116,6 @@ class GoogleCallbackViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_200_OK)
 
 
-
-
-
-
 class MicrosoftRedirectViewSet(viewsets.ModelViewSet):
     queryset = User.objects.none()
     serializer_class = UserSerializer
@@ -125,7 +123,8 @@ class MicrosoftRedirectViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         SCOPES = [
             "User.Read",
-            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "offline_access"
         ]
 
         rand = SystemRandom()
@@ -179,18 +178,17 @@ class MicrosoftCallbackViewSet(viewsets.ModelViewSet):
 
         response = requests.post(token_url, data=data)
         if not response.ok:
-           return Response({"error": "Failed to exchange code for token"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Failed to exchange code for token"}, status=status.HTTP_400_BAD_REQUEST)
 
         tokens = response.json()
         access_token = tokens.get("access_token")
         refresh_token = tokens.get("refresh_token")
-        
         expires_in = tokens.get("expires_in")
-        expiration_time = datetime.utcnow() + timedelta(seconds=expires_in)
-
 
         if not access_token:
             return Response({"error": "Access token missing"}, status=status.HTTP_400_BAD_REQUEST)
+
+        expiration_time = timezone.now() + timedelta(seconds=expires_in) if expires_in else timezone.now() + timedelta(hours=1)
 
         user_info_url = "https://graph.microsoft.com/v1.0/me"
         headers = {"Authorization": f"Bearer {access_token}"}
@@ -200,7 +198,7 @@ class MicrosoftCallbackViewSet(viewsets.ModelViewSet):
             return Response({"error": "Failed to fetch user info from Microsoft"}, status=status.HTTP_400_BAD_REQUEST)
 
         user_info = user_info_response.json()
-        email = user_info.get("userPrincipalName")
+        email = user_info.get("userPrincipalName") or user_info.get("mail")
 
         if not email:
             return Response({"error": "Email not found in Microsoft user info"}, status=status.HTTP_400_BAD_REQUEST)
@@ -209,10 +207,9 @@ class MicrosoftCallbackViewSet(viewsets.ModelViewSet):
         login(request, user)
         oauth_tokens, _ = OAuthTokens.objects.get_or_create(user=user)
         oauth_tokens.microsoft_access = access_token
-        oauth_tokens.microsoft_refresh = refresh_token 
-        oauth_tokens.microsoft_expiry = expiration_time 
+        oauth_tokens.microsoft_refresh = refresh_token if refresh_token else oauth_tokens.microsoft_refresh
+        oauth_tokens.microsoft_expiry = expiration_time
         oauth_tokens.save()
-
 
         refresh = RefreshToken.for_user(user)
         token = TokenObtainPairSerializer().get_token(user)
@@ -221,5 +218,3 @@ class MicrosoftCallbackViewSet(viewsets.ModelViewSet):
             "access_token": str(token.access_token),
             "refresh_token": str(refresh),
         }, status=status.HTTP_200_OK)
-
-
