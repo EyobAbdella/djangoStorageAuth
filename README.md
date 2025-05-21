@@ -31,7 +31,7 @@
 1. Install the module using pip:
     
     ```bash
-    pip install git+git://github.com/EyobAbdella/djangoStorageAuth.git
+     pip install git+https://github.com/EyobAbdella/djangoStorageAuth.git
     ```
     
 2. Apply migrations:
